@@ -1,6 +1,7 @@
 function intervalled(n, dt, callback) {
   let handle = setTimeout(() => {
-    callback();
+    let result = callback();
+    if (result === false) {return}
     if (n>0) {
       intervalled(n-1, dt, callback)
     }

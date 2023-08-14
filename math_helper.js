@@ -1,9 +1,10 @@
+// Made breaking change
 function zeros(nx, ny=null) {
-  return valueGrid(nx, ny || nx, 0)
+  return valueGrid(nx, ny, 0)
 }
 
 function nulls(nx,ny=null) {
-  return valueGrid(nx, ny || nx, null)
+  return valueGrid(nx, ny, null)
 }
 
 function valueGrid(nx, ny, value) {
@@ -12,6 +13,15 @@ function valueGrid(nx, ny, value) {
   } else {
     return new Array(nx).fill(value).map(() => new Array(ny).fill(value));
   }
+}
+
+function map1d(xRange, fn) {
+  let result = zeros(xRange.length)
+  for (let i in xRange) {
+    let x = xRange[i]
+    result[i] = fn(x)
+  }
+  return result
 }
 
 function map2d(xRange, yRange, fn) {
@@ -34,4 +44,4 @@ function setRect(array, xLimits, yLimits, value) {
   }
 }
 
-export {zeros, map2d, setRect, nulls}
+export {zeros, map1d, map2d, setRect, nulls}

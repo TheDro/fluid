@@ -1,7 +1,42 @@
 import { zeros } from "./math_helper"
 
 
+function WaveChamber1D({current, previous = current, c = 1, boundaries = null}) {
+  let self = {
+    previous: previous,
+    current: current,
+    next: zeros(current.length),
+    nx: current.length,
+    c: c,
+    boundaries: boundaries,
+    advance,
+  }
 
+  let {min, max} = Math
+  let {nx} = self
+
+  function advance(dt) {
+    let delta = dt**2*self.c**2
+
+    for (let i = 0; i < nx; i++) {
+
+      let iMinus = max(i-1, 0)
+      let iPlus = min(i+1, nx-1)
+
+      if (boundaries && boundaries[i] !== null) {
+        self.next[i] = boundaries[i]
+        continue
+      }
+      self.next[i] = 2*self.current[i] - self.previous[i] +
+        delta*(
+          self.current[iMinus] - 2*self.current[i] + self.current[iPlus]
+        )
+    }
+    [self.previous, self.current, self.next] = [self.current, self.next, self.previous]
+  }
+
+  return self
+}
 
 function WaveChamber({current, previous = current, c = 1, boundaries = null}) {
   let self = {
@@ -51,4 +86,4 @@ function WaveChamber({current, previous = current, c = 1, boundaries = null}) {
   return self
 }
 
-export default WaveChamber
+export {WaveChamber, WaveChamber1D}
