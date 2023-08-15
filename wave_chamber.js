@@ -1,4 +1,4 @@
-import { zeros } from "./math_helper"
+import { interpolate2, zeros } from "./math_helper"
 
 
 function WaveChamber1D({current, previous = current, c = 1, boundaries = null}) {
@@ -16,14 +16,15 @@ function WaveChamber1D({current, previous = current, c = 1, boundaries = null}) 
   let {nx} = self
 
   function advance(dt) {
-    let delta = dt**2*self.c**2
+    let dx = 1
+    let delta = dt**2*self.c**2/dx**2
 
     for (let i = 0; i < nx; i++) {
 
       let iMinus = max(i-1, 0)
       let iPlus = min(i+1, nx-1)
 
-      if (boundaries && boundaries[i] !== null) {
+      if (boundaries && boundaries[i] !== null && boundaries[i] !== 1000) {
         self.next[i] = boundaries[i]
         continue
       }
@@ -32,6 +33,15 @@ function WaveChamber1D({current, previous = current, c = 1, boundaries = null}) 
           self.current[iMinus] - 2*self.current[i] + self.current[iPlus]
         )
     }
+
+    // compute infinite boundary
+    for (let i = 0; i < nx; i++) {
+      if (boundaries && boundaries[i] == 1000) {
+        debugger
+        self.next[i] = interpolate2([0, self.next[i-1]], [-dt, self.current[i-1]], [-2*dt, self.current[i-1]], -dx/c)
+      }
+    }
+
     [self.previous, self.current, self.next] = [self.current, self.next, self.previous]
   }
 

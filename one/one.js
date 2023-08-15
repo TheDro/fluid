@@ -2,7 +2,7 @@ import '../style.css'
 import _ from 'lodash'
 import Plotly from 'plotly.js-dist-min'
 import {WaveChamber1D} from '../wave_chamber.js'
-import {map1d, nulls, setRect} from '../math_helper.js'
+import {map1d, nulls, setRect, interpolate2} from '../math_helper.js'
 import {intervalled} from '../time_helper.js'
 window._ = _
 
@@ -103,7 +103,7 @@ intervalled(400, 16, () => {
     guess.push(0)
   } else {
     let i = spot1.length-1
-    let currentGuess = interpolate([time[i], spot1[i]], [time[i-1], spot1[i-1]], [time[i-2], spot1[i-2]], time[i]-1)
+    let currentGuess = interpolate2([time[i], spot1[i]], [time[i-1], spot1[i-1]], [time[i-2], spot1[i-2]], time[i]-1)
     guess.push(currentGuess)
   }
 
@@ -116,13 +116,6 @@ intervalled(400, 16, () => {
   }
 })
 
-function interpolate([x0, y0], [x1, y1], [x2, y2], x3) {
-  let y3 = 
-    y0*(x3-x1)*(x3-x2)/(x0-x1)/(x0-x2) + 
-    y1*(x3-x0)*(x3-x2)/(x1-x0)/(x1-x2) +
-    y2*(x3-x0)*(x3-x1)/(x2-x0)/(x2-x1)
-  return y3
-}
 
 function toTable(data) {
   const headers = ['time', 'spot1', 'spot2'];
