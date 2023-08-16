@@ -54,6 +54,8 @@ let nx = x.length
 let boundaries = nulls(nx)
 boundaries[0] = 0
 boundaries[nx-1] = 0
+boundaries[30] = 1000
+boundaries[31] = 0
 let chamber = WaveChamber1D({previous: wave1, current: wave2, c: 1, boundaries})
 
 
@@ -72,7 +74,7 @@ let guess = []
 
 intervalled(400, 16, () => {
   let DT = 0.25
-  let N = 10
+  let N = 2
   for (let n=0; n < N; n++) {
     let dt = DT/N
     t += dt
@@ -110,7 +112,7 @@ intervalled(400, 16, () => {
   plot('plot1A', spot1)
   plot('plot1B', spot2)
   plot('plot2', chamber.current)
-  if (chamber.current[90]>0.1) {
+  if (chamber.current[80]>0.1) {
     toTable([_.range(spot1.length), time, spot1, spot2, guess])
     return false
   }

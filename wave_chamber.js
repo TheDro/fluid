@@ -18,9 +18,9 @@ function WaveChamber1D({current, previous = current, c = 1, boundaries = null}) 
   function advance(dt) {
     let dx = 1
     let delta = dt**2*self.c**2/dx**2
+    let sigma = 0 // dampening factor
 
     for (let i = 0; i < nx; i++) {
-
       let iMinus = max(i-1, 0)
       let iPlus = min(i+1, nx-1)
 
@@ -28,17 +28,17 @@ function WaveChamber1D({current, previous = current, c = 1, boundaries = null}) 
         self.next[i] = boundaries[i]
         continue
       }
-      self.next[i] = 2*self.current[i] - self.previous[i] +
+      self.next[i] = (2*self.current[i] - self.previous[i] + sigma*dt/2*self.previous[i] +
         delta*(
           self.current[iMinus] - 2*self.current[i] + self.current[iPlus]
-        )
+        ))/(1+sigma*dt/2)
     }
 
     // compute infinite boundary
     for (let i = 0; i < nx; i++) {
       if (boundaries && boundaries[i] == 1000) {
-        debugger
-        self.next[i] = interpolate2([0, self.next[i-1]], [-dt, self.current[i-1]], [-2*dt, self.current[i-1]], -dx/c)
+        let newValue = interpolate2([0, self.next[i-1]], [-dt, self.current[i-1]], [-2*dt, self.previous[i-1]], -dx/c)
+        self.next[i] = newValue
       }
     }
 
